@@ -1,0 +1,16 @@
+com\webcourse\repository\SubscriptionRepository.class
+com\webcourse\model\User.class
+com\webcourse\model\User$Role.class
+com\webcourse\model\Review.class
+com\webcourse\service\CustomUserDetailsService.class
+com\webcourse\config\SecurityConfig.class
+com\webcourse\repository\UserRepository.class
+com\webcourse\controller\CourseController.class
+com\webcourse\repository\CourseRepository.class
+com\webcourse\model\CourseMaterial.class
+com\webcourse\WebCourseApplication.class
+com\webcourse\model\Subscription.class
+com\webcourse\model\Course.class
+com\webcourse\repository\CourseMaterialRepository.class
+com\webcourse\repository\ReviewRepository.class
+com\webcourse\controller\AuthController.class
