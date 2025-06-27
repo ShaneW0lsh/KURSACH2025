@@ -25,7 +25,8 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Список курсов</h2>
-        <a th:href="@{/courses/create}" sec:authorize="hasAnyRole('TEACHER','ADMIN')" class="btn btn-primary">Создать курс</a>
+        <a th:href="@{/courses/create}" sec:authorize="hasAnyRole('TEACHER','ADMIN')" class="btn btn-primary">Создать
+            курс</a>
     </div>
 
     <div class="row g-4" th:if="${not #lists.isEmpty(courses)}">
@@ -33,7 +34,9 @@
             <div class="card h-100 shadow-sm">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">
-                        <a th:href="@{/courses/{id}(id=${course.id})}" th:text="${course.title}" class="text-decoration-none"></a>
+                        <!--                        <a th:href="@{/courses/{id}(id=${course.id})}" th:text="${course.title}" class="text-decoration-none"></a>-->
+                        <p th:text="${course.title}"
+                           class="text-decoration-none"></p>
                     </h5>
                     <p class="card-text text-muted mb-3" th:text="${course.subject}">Subject</p>
 
@@ -43,7 +46,8 @@
                               method="post" class="d-inline">
                             <button type="submit" class="btn btn-sm btn-outline-primary">Subscribe</button>
                         </form>
-                        <span th:if="${#lists.contains(subscribedIds, course.id)}" class="badge bg-success">Subscribed</span>
+                        <span th:if="${#lists.contains(subscribedIds, course.id)}"
+                              class="badge bg-success">Subscribed</span>
 
                         <div class="mt-2" sec:authorize="hasAnyRole('TEACHER','ADMIN')">
                             <a th:href="@{/courses/delete/{id}(id=${course.id})}" class="btn btn-sm btn-danger me-1">Удалить</a>

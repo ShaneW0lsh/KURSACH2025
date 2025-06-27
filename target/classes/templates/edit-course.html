@@ -1,55 +1,5 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>Создание курса</title>-->
-<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
-<!--</head>-->
-<!--<body>-->
-<!--<nav class="navbar navbar-expand-lg navbar-dark bg-dark">-->
-<!--    <div class="container">-->
-<!--        <a class="navbar-brand" href="/">Web Course</a>-->
-<!--        <div class="navbar-nav ms-auto">-->
-<!--            <a class="btn btn-outline-light" style="margin-right: 0.5em" href="/courses">Catalogue</a>-->
-<!--            <a class="btn btn-outline-light" style="margin-right: 0.5em" href="/courses/my-courses">My Courses</a>-->
-<!--            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">-->
-<!--                <button class="btn btn-outline-light" type="submit">Logout</button>-->
-<!--            </form>-->
-<!--            <form sec:authorize="isAnonymous()" th:action="@{/login}" method="post">-->
-<!--                <button class="btn btn-outline-light" type="submit">Login</button>-->
-<!--            </form>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</nav>-->
-<!--<h2>Редактирование курса</h2>-->
-<!--<form th:action="@{'/courses/' + ${course.id} + '/edit'}" method="post" enctype="multipart/form-data" th:object="${course}">-->
-<!--    <label>Название курса:</label>-->
-<!--    <input type="text" th:field="*{title}" required/><br/>-->
-
-<!--    <label>Описание:</label>-->
-<!--    <textarea th:field="*{description}" required></textarea><br/>-->
-
-<!--    <label>Добавить файлы:</label>-->
-<!--    <input type="file" name="files" multiple/><br/><br/>-->
-
-<!--    <h4>Существующие файлы:</h4>-->
-<!--    <ul>-->
-<!--        <li th:each="material : ${course.materials}">-->
-<!--            <a th:href="@{'/courses/materials/' + ${material.id} + '/download'}"-->
-<!--               th:text="${material.filename}"></a>-->
-<!--            <form th:action="@{'/courses/materials/' + ${material.id} + '/delete'}"-->
-<!--                  method="post" style="display:inline;">-->
-<!--                <button type="submit">Удалить</button>-->
-<!--            </form>-->
-<!--        </li>-->
-<!--    </ul>-->
-
-<!--    <button type="submit">Сохранить изменения</button>-->
-<!--</form>-->
-<!--</body>-->
-<!--</html>-->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Редактировать курс</title>
@@ -79,9 +29,7 @@
     <form th:action="@{'/courses/' + ${course.id} + '/edit'}"
           th:object="${course}"
           method="post"
-          enctype="multipart/form-data"
-          class="needs-validation"
-          novalidate>
+          enctype="multipart/form-data">
 
         <div class="mb-3">
             <label for="title" class="form-label">Название курса</label>
@@ -101,49 +49,12 @@
             <div class="invalid-feedback">Пожалуйста, введите описание.</div>
         </div>
 
-        <div class="mb-4">
-            <label for="materials" class="form-label">Добавить новые материалы (файлы)</label>
-            <input type="file" name="materials" multiple class="form-control" id="materials">
-            <div class="form-text">Вы можете выбрать несколько файлов.</div>
-        </div>
-
-        <div class="mb-4">
-            <h5>Существующие материалы</h5>
-            <ul class="list-group">
-                <li th:each="material : ${course.materials}" class="list-group-item d-flex justify-content-between align-items-center">
-                    <span th:text="${material.filename}">Имя файла</span>
-                    <form th:action="@{/courses/materials/${material.id}/delete}" method="post" onsubmit="return confirm('Удалить файл?')">
-                        <input type="hidden" name="_method" value="delete"/>
-                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-
         <div class="d-flex justify-content-between">
             <button type="submit" class="btn btn-success">Сохранить изменения</button>
             <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-secondary">Отмена</a>
         </div>
     </form>
 </div>
-
-<!--<script>-->
-<!--    // Bootstrap client-side validation-->
-<!--    (() => {-->
-<!--        'use strict';-->
-<!--        const forms = document.querySelectorAll('.needs-validation');-->
-<!--        Array.from(forms).forEach(form => {-->
-<!--            form.addEventListener('submit', event => {-->
-<!--                if (!form.checkValidity()) {-->
-<!--                    event.preventDefault();-->
-<!--                    event.stopPropagation();-->
-<!--                }-->
-<!--                form.classList.add('was-validated');-->
-<!--            }, false);-->
-<!--        });-->
-<!--    })();-->
-<!--</script>-->
-
 </body>
 </html>
 

@@ -50,9 +50,19 @@ public class CourseController {
     private final ReviewRepository reviewRepository;
 
     @GetMapping("/{id}")
-    public String courseDetails(@PathVariable Long id, Model model) {
+    public String courseDetails(@PathVariable Long id, Model model, Principal principal) {
+        User user = userRepository.findByUsername(principal.getName());
+
         Course course = courseRepository.findById(id).orElseThrow();
         model.addAttribute("course", course);
+
+        boolean isAuthor = user.getUsername().equals(course.getAuthor().getUsername());
+        boolean isAdmin = user.getRole().name().equals("ROLE_ADMIN");
+        boolean isSubscribed = subscriptionRepository.existsByUserAndCourse(user, course);
+
+        if (!isAuthor && !isAdmin && !isSubscribed) {
+            return "redirect:/error/403";
+        }
 
         List<CourseMaterial> materials = courseMaterialRepository.findByCourseOrderByOrderIndexAsc(course);
         model.addAttribute("materials", materials);
@@ -153,75 +163,17 @@ public class CourseController {
                                Principal principal) throws IOException {
         Course course = courseRepository.findById(id).orElseThrow();
 
-        // Check ownership
         if (!principal.getName().equals(course.getAuthor().getUsername())) {
             return "redirect:/courses";
         }
 
-        // Update basic info
         course.setTitle(updatedCourse.getTitle());
         course.setDescription(updatedCourse.getDescription());
+        course.setSubject(updatedCourse.getSubject());
         courseRepository.save(course);
 
-        // Handle file uploads (append only)
-        if (files != null && !files.isEmpty()) {
-            int nextIndex = courseMaterialRepository.findByCourseOrderByOrderIndexAsc(course).size();
-
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    String uniqueName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                    Path filePath = Paths.get("uploads/" + uniqueName);
-                    Files.createDirectories(filePath.getParent());
-                    Files.write(filePath, file.getBytes());
-
-                    CourseMaterial newMaterial = new CourseMaterial();
-                    newMaterial.setFilename(file.getOriginalFilename());
-                    newMaterial.setFilePath(filePath.toString());
-                    newMaterial.setCourse(course);
-                    newMaterial.setOrderIndex(nextIndex++);
-                    courseMaterialRepository.save(newMaterial);
-                }
-            }
-        }
-
-        return "redirect:/courses/" + id + "/edit";
+        return "redirect:/courses/" + id;
     }
-//    @PostMapping("/{id}/edit")
-//    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
-//    public String updateCourse(@PathVariable Long id,
-//                               @ModelAttribute Course updatedCourse,
-//                               @RequestParam(value = "files", required = false) List<MultipartFile> files,
-//                               Principal principal) throws IOException {
-//        System.out.println("UPDATE TRIGGERED");
-//        Course course = courseRepository.findById(id).orElseThrow();
-//
-//        if (!principal.getName().equals(course.getAuthor().getUsername())) {
-//            return "redirect:/courses";
-//        }
-//
-//        course.setTitle(updatedCourse.getTitle());
-//        course.setDescription(updatedCourse.getDescription());
-//        courseRepository.save(course);
-//
-//        if (files != null) {
-//            for (MultipartFile file : files) {
-//                if (!file.isEmpty()) {
-//                    String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-//                    Path filePath = Paths.get("uploads/" + filename);
-//                    Files.createDirectories(filePath.getParent());
-//                    Files.write(filePath, file.getBytes());
-//
-//                    CourseMaterial material = new CourseMaterial();
-//                    material.setFilename(file.getOriginalFilename());
-//                    material.setFilePath(filePath.toString());
-//                    material.setCourse(course);
-//                    courseMaterialRepository.save(material);
-//                }
-//            }
-//        }
-//
-//        return "redirect:/courses/" + id;
-//    }
 
     @PostMapping("/materials/{id}/delete")
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
@@ -234,7 +186,6 @@ public class CourseController {
             return "redirect:/courses";
         }
 
-        // Delete file from disk
         try {
             Files.deleteIfExists(Paths.get(material.getFilePath()));
         } catch (IOException e) {
@@ -252,25 +203,6 @@ public class CourseController {
 
         return "redirect:/courses/" + course.getId() + "/edit";
     }
-
-//    @PostMapping("/materials/{id}/delete")
-//    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
-//    public String deleteMaterial(@PathVariable Long id, Principal principal) {
-//        CourseMaterial material = courseMaterialRepository.findById(id).orElseThrow();
-//        Course course = material.getCourse();
-//
-//        if (!principal.getName().equals(course.getAuthor().getUsername())) {
-//            return "redirect:/courses";
-//        }
-//
-//        courseMaterialRepository.delete(material);
-//        try {
-//            Files.deleteIfExists(Paths.get(material.getFilePath()));
-//        } catch (IOException e) {
-//        }
-//
-//        return "redirect:/courses/" + course.getId() + "/edit";
-//    }
 
     @GetMapping("/materials/{id}/download")
     public ResponseEntity<UrlResource> downloadMaterial(@PathVariable Long id) throws IOException {

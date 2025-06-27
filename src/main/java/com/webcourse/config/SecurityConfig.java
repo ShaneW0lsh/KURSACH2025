@@ -20,8 +20,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/login", "/css/**", "/courses", "/courses/download/**").permitAll()
                         .requestMatchers("/courses/create", "/courses/delete/**").hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception.accessDeniedPage("/error/403"))
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
